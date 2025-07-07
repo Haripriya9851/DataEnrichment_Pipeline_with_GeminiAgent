@@ -37,3 +37,4 @@ This task involves building a Python-based data enrichment pipeline. The pipelin
 ## Notes
 - The pipeline processes data in batches of 10 for efficiency.
 - Make sure your API keys are valid and have sufficient quota. 
+- OpenCorporates could be used.

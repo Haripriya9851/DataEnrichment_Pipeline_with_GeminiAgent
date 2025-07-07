@@ -34,5 +34,5 @@ DataEnrichment_Pipeline_with_GeminiAgent/
     └── GCP_Architecture.pdf
 ```
 
-- **Task 1 - Data Pipeline/**: Contains the Python scripts and requirements for building and running the data enrichment pipeline.
+- **Task 1 - Data Pipeline/**: Contains the Python scripts and requirements for building and running the data enrichment pipeline. As I did not have "API" subscription I faced toomanyrequests() error. 
 - **Task-2 - Pipeline Architecture/**: Contains documentation and architecture diagrams for the cloud deployment solution.
