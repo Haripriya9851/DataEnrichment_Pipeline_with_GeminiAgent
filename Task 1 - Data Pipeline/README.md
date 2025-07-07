@@ -1,29 +1,34 @@
-# Enrichment Pipeline
+# Task 1 - Data Pipeline
 
-This project enriches franchisee data using Google Serper and Gemini (Google Generative AI).
+## Overview
+This task involves building a Python-based data enrichment pipeline. The pipeline is designed to automate the process of enriching franchisee data using external data sources.
 
-## Setup
+## Data Enrichment Considerations
+- The Opencorporates API was leveraged for enriching company data.
+- Due to the lack of access to a premium Opencorporates API plan, the pipeline encountered rate limit errors when scaling up for large-scale web-scraping.
+- As a result, the final pipeline results have been submitted for 50 franchisees only.
 
-1. Clone the repository and navigate to the `enrichment_pipeline` directory.
-2. Install dependencies:
+## Files
+- `main.py`: Entry point for running the data pipeline.
+- `agent_functions.py`: Contains core functions for data enrichment.
+- `helper_functions.py`: Utility functions used throughout the pipeline.
+- `requirements.txt`: Python dependencies for the pipeline.
+- `.env`: Environment variables (API keys, paths, etc.).
+
+## How to Run
+1. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-3. Set up your environment variables. You can copy `.env` and fill in your API keys:
-   ```bash
-   cp .env .env.local
-   # Edit .env.local and add your keys
-   export $(cat .env.local | xargs)
-   ```
-
-## Usage
-
-1. Place your input Excel file (e.g., `Golden Chick_DE_Takehome.xlsx`) in the parent directory.
-2. Run the pipeline:
+2. Set up your `.env` file with the required API keys and paths.
+3. Run the pipeline:
    ```bash
    python main.py
    ```
-3. The enriched results will be saved to `enriched_franchisees_gemini.xlsx` in the same directory.
+
+## Notes
+- For larger datasets, consider upgrading to a premium Opencorporates API plan to avoid rate limiting.
+- The current submission demonstrates the pipeline's functionality on a sample of 50 franchisees due to API constraints.
 
 ## Environment Variables
 - `GOOGLE_API_KEY`: Your Google Generative AI API key
