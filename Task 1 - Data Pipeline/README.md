@@ -40,3 +40,8 @@ Final Enriched franchisee details based on public datasource web crawl agent are
 - The pipeline processes data in batches of 10 for efficiency.
 - Make sure your API keys are valid and have sufficient quota. 
 - OpenCorporates could be used for authenticated result matching.
+
+## References:
+1. https://medium.com/google-cloud/ai-search-and-summary-app-with-gemini-2-flash-crew-ai-step-by-step-guide-b23fa39cdee5
+2. https://serper.dev/
+3. https://opencorporates.com/ - For Validation of Results
