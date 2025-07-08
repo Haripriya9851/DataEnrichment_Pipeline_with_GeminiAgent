@@ -1,7 +1,9 @@
 # Task 1 - Data Pipeline
 
 ## Overview
-This task involves building a Python-based data enrichment pipeline. The pipeline is designed to automate the process of enriching franchisee data using public data sources webcrawling with Google-Serper and the crawled results were reasoned and extracted insights with Gemini Model.
+This task involves building a Python-based data enrichment pipeline. The pipeline is designed to automate the process of enriching franchisee data using public data sources webcrawling with Google-Serper and the crawled results were reasoned and extracted insights with Gemini Model. 
+
+Final Enriched franchisee details based on public datasource web crawl agent are stored in Excel : [enriched_franchisees_gemini (4).xlsx]([url](https://github.com/Haripriya9851/DataEnrichment_Pipeline_with_GeminiAgent/blob/main/Task%201%20-%20Data%20Pipeline/enriched_franchisees_gemini%20(4).xlsx))
 
 ## Data Enrichment Considerations
 - Gemini API key when run in batch works well. API limits has to be considered.
