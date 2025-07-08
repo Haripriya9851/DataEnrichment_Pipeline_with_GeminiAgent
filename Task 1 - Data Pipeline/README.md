@@ -1,9 +1,10 @@
 # Task 1 - Data Pipeline
 
 ## Overview
-This task involves building a Python-based data enrichment pipeline. The pipeline is designed to automate the process of enriching franchisee data using external data sources.
+This task involves building a Python-based data enrichment pipeline. The pipeline is designed to automate the process of enriching franchisee data using public data sources webcrawling with Google-Serper and the crawled results were reasoned and extracted insights with Gemini Model.
 
 ## Data Enrichment Considerations
+- Gemini API key when run in batch works well. API limits has to be considered.
 - The Opencorporates API was leveraged for enriching company data.
 - Due to the lack of access to a premium Opencorporates API plan, the pipeline encountered rate limit errors when scaling up for large-scale web-scraping.
 - As a result, the final pipeline results have been submitted for 50 franchisees only.
@@ -27,7 +28,7 @@ This task involves building a Python-based data enrichment pipeline. The pipelin
    ```
 
 ## Notes
-- For larger datasets, consider upgrading to a premium Opencorporates API plan to avoid rate limiting.
+- For larger datasets, consider upgrading to a premium Serper and Gemini API plan to avoid rate limiting.
 
 ## Environment Variables
 - `GOOGLE_API_KEY`: Your Google Generative AI API key
@@ -36,4 +37,4 @@ This task involves building a Python-based data enrichment pipeline. The pipelin
 ## Notes
 - The pipeline processes data in batches of 10 for efficiency.
 - Make sure your API keys are valid and have sufficient quota. 
-- OpenCorporates could be used.
+- OpenCorporates could be used for authenticated result matching.
