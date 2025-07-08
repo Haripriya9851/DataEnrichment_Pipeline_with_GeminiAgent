@@ -28,7 +28,6 @@ This task involves building a Python-based data enrichment pipeline. The pipelin
 
 ## Notes
 - For larger datasets, consider upgrading to a premium Opencorporates API plan to avoid rate limiting.
-- The current submission demonstrates the pipeline's functionality on a sample of 50 franchisees due to API constraints.
 
 ## Environment Variables
 - `GOOGLE_API_KEY`: Your Google Generative AI API key
