@@ -4,6 +4,16 @@ import pandas as pd
 import time
 import requests
 
+def safe_enrich(func, *args, retries=3, delay=2, **kwargs):
+    for attempt in range(retries):
+        try:
+            return func(*args, **kwargs)
+        except (requests.ConnectionError, requests.exceptions.RequestException) as e:
+            print(f"Connection error: {e}. Retrying in {delay} seconds...")
+            time.sleep(delay)
+    print("Failed after retries.")
+    return {}
+
 def extract_json(text):
     cleaned = re.sub(r"^```json\s*|```$", "", text.strip(), flags=re.MULTILINE)
     try:
@@ -34,14 +44,4 @@ def clean_dataframe(df):
 def batch_iterable(iterable, batch_size):
     l = len(iterable)
     for ndx in range(0, l, batch_size):
-        yield iterable[ndx:min(ndx + batch_size, l)]
-
-def safe_enrich(func, *args, retries=3, delay=2, **kwargs):
-    for attempt in range(retries):
-        try:
-            return func(*args, **kwargs)
-        except (requests.ConnectionError, requests.exceptions.RequestException) as e:
-            print(f"Connection error: {e}. Retrying in {delay} seconds...")
-            time.sleep(delay)
-    print("Failed after retries.")
-    return {} 
+        yield iterable[ndx:min(ndx + batch_size, l)] 
