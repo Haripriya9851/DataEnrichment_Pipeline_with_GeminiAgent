@@ -9,10 +9,10 @@ import requests
 from helper_functions import clean_dataframe,extract_json,batch_iterable,safe_enrich
 
 # --- SETUP ---
-# os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY", "KEY")
-# os.environ["SERPER_API_KEY"] = os.getenv("SERPER_API_KEY", "KEY")
-os.environ["GOOGLE_API_KEY"] = "KEY"
-os.environ["SERPER_API_KEY"] = "KEY"
+os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY", "AIzaSyC0_23sKydG3wlqHRgxQbWe6HV4k5hEKv4")
+os.environ["SERPER_API_KEY"] = os.getenv("SERPER_API_KEY", "4d17b38723a34498589c3edd102b7b4b175b65f3")
+# os.environ["GOOGLE_API_KEY"] = "KEY"
+# os.environ["SERPER_API_KEY"] = "KEY"
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 gemini_model = genai.GenerativeModel('gemini-2.5-flash')
 serper = GoogleSerperAPIWrapper()

@@ -18,6 +18,33 @@ Final Enriched franchisee details based on public datasource web crawl agent are
 - `requirements.txt`: Python dependencies for the pipeline.
 - `.env`: Environment variables (API keys, paths, etc.).
 
+## Data Flow Overview
+
+1. **Read Excel File**
+   - The pipeline starts by reading the input Excel file (`Golden Chick_DE_Takehome.xlsx`) containing franchisee data.
+
+2. **Batch Processing**
+   - The data is processed in batches to efficiently handle large datasets and avoid API rate limits.
+
+3. **Data Cleaning**
+   - Each batch is cleaned (standardizing names, formatting state/city, etc.) using the `clean_dataframe` function.
+
+4. **Classification**
+   - Franchisee names are classified as either `Individual` or `Corporate` using a Gemini LLM prompt.
+
+5. **Conditional Enrichment**
+   - For each row:
+     - If classified as **Individual**: The pipeline enriches the data by searching for the company owned by the individual and then fetching corporate details.
+     - If classified as **Corporate**: The pipeline enriches the data by searching for business info and extracting corporate details.
+     - If classification is unknown: Fallback/default values are used.
+
+6. **Result Compilation**
+   - All enriched data is compiled into a new DataFrame and saved to an output Excel file (`enriched_franchisees_gemini.xlsx`).
+
+---
+
+This flow ensures that each franchisee is processed appropriately based on their type, maximizing the quality and relevance of the enriched data.
+
 ## How to Run
 1. Clone Repo and Install dependencies:
    ```bash
@@ -33,8 +60,8 @@ Final Enriched franchisee details based on public datasource web crawl agent are
 - For larger datasets, consider upgrading to a premium Serper and Gemini API plan to avoid rate limiting.
 
 ## Environment Variables
-- `GOOGLE_API_KEY`: Your Google Generative AI API key
-- `SERPER_API_KEY`: Your Serper API key
+- `GOOGLE_API_KEY`: Your Google Generative AI/Gemini API key from https://aistudio.google.com/apikey 
+- `SERPER_API_KEY`: Your Serper API key from https://serper.dev/api-keys 
 
 ## Notes
 - The pipeline processes data in batches of 10 for efficiency.
@@ -42,6 +69,6 @@ Final Enriched franchisee details based on public datasource web crawl agent are
 - OpenCorporates could be used for authenticated result matching.
 
 ## References:
-1. https://medium.com/google-cloud/ai-search-and-summary-app-with-gemini-2-flash-crew-ai-step-by-step-guide-b23fa39cdee5
-2. https://serper.dev/
-3. https://opencorporates.com/ - For Validation of Results
+1. Reference Article - https://medium.com/google-cloud/ai-search-and-summary-app-with-gemini-2-flash-crew-ai-step-by-step-guide-b23fa39cdee5
+2. Google Serper - https://serper.dev/
+3. https://opencorporates.com/ - Future scope for Validation of Results
