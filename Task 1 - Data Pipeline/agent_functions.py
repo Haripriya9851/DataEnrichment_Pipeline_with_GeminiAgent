@@ -1,21 +1,26 @@
 import os
+import json
+import re
+import pandas as pd
 from langchain_community.utilities import GoogleSerperAPIWrapper
 import google.generativeai as genai
-from helper_functions import extract_json, clean_dataframe, safe_enrich
+import time
+import requests
+from helper_functions import clean_dataframe,extract_json,batch_iterable,safe_enrich
 
 # --- SETUP ---
-os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY", "your_google_api_key")
-os.environ["SERPER_API_KEY"] = os.getenv("SERPER_API_KEY", "your_serper_api_key")
+os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY", "AIzaSyC0_23sKydG3wlqHRgxQbWe6HV4k5hEKv4")
+os.environ["SERPER_API_KEY"] = os.getenv("SERPER_API_KEY", "4d17b38723a34498589c3edd102b7b4b175b65f3")
+# os.environ["GOOGLE_API_KEY"] = "KEY"
+# os.environ["SERPER_API_KEY"] = "KEY"
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
-gemini_model = genai.GenerativeModel('gemini-2.0-flash')
+gemini_model = genai.GenerativeModel('gemini-2.5-flash')
 serper = GoogleSerperAPIWrapper()
-
+search = GoogleSerperAPIWrapper()
 
 def search_web(query: str):
-    results = serper.results(query)
-    if isinstance(results, dict) and results.get('organic'):
-        return results['organic'][0]
-    return {}
+    results = search.results(query)
+    return results
 
 def classify_franchisees(names):
     prompt = f"""Classify the following names as 'Individual' or 'Corporate':
@@ -34,31 +39,19 @@ No explanation. No markdown. No text before or after. If you cannot classify, re
     data = extract_json(text)
     if not data:
         print("Gemini returned empty or invalid output. Falling back to empty DataFrame.")
-        import pandas as pd
         return pd.DataFrame(columns=["name", "type"])
-    import pandas as pd
     return pd.DataFrame(data)
 
 def enrich_individual(name, franchise, state):
     company_query = f"What company does {name} own that holds a {franchise} franchise in {state}?"
-    result = search_web(company_query)
-    snippet = result.get('snippet', '')
-    url = result.get('link', '')
-    title = result.get('title', '')
-
-    legal_name_prompt = f"From the following search result, return the company name owned by {name} that is associated with {franchise}. If not found, return just '{name}'. No explanation.\n\nTitle: {title}\nSnippet: {snippet}\nURL: {url}"
+    snippet = search_web(company_query)
+    legal_name_prompt = f"From the following text, return the company name owned by {name} that is associated with {franchise}. If not found, return just '{name}'. No explanation.\n\n{snippet}"
     legal_name = gemini_model.generate_content(legal_name_prompt).text.strip()
 
     details_query = f"Details of {legal_name} in {state}, include corporate address, phone, and email"
-    result2 = search_web(details_query)
-    snippet2 = result2.get('snippet', '')
-    url2 = result2.get('link', '')
-    title2 = result2.get('title', '')
+    snippet2 = search_web(details_query)
 
-    extract_prompt = f"""From the following search result, extract corporate details and return JSON:
-Title: {title2}
-Snippet: {snippet2}
-URL: {url2}
+    extract_prompt = f"""From the {snippet2}, extract corporate details along with Source URLs used for enrichment. return JSON:
 
 {{
   "legal_corporate_name": "{legal_name}",
@@ -67,26 +60,19 @@ URL: {url2}
   "corporate_email": "",
   "owner_name": "{name}",
   "linkedin_url": "",
-  "Source URLs used for enrichment": "{url2}"
+  "Source URLs used for enrichment": ""
 }}
 No backtics(```),No markdown. Return only JSON"""
     response = gemini_model.generate_content(extract_prompt)
     text = response.text.strip()
-    result_json = extract_json(text)
-    result_json["Source URLs used for enrichment"] = url2 if url2 else ""
-    return result_json
+    result = extract_json(text)
+    return result
 
 def enrich_corporate(name, state):
     query = f"Who owns or manages {name} in {state}?"
-    result = search_web(query)
-    snippet = result.get('snippet', '')
-    url = result.get('link', '')
-    title = result.get('title', '')
-
-    extract_prompt = f"""From the following search result, extract business info and return JSON:
-Title: {title}
-Snippet: {snippet}
-URL: {url}
+    snippet = search_web(query)
+    extract_prompt = f"""From the following, extract business info along with Source URLs used for enrichment. return JSON:
+{snippet}
 
 {{
   "legal_corporate_name": "{name}",
@@ -95,19 +81,19 @@ URL: {url}
   "corporate_email": "",
   "owner_name": "",
   "linkedin_url": "",
-  "Source URLs used for enrichment": "{url}"
-}}
+  "Source URLs used for enrichment": ""
+}}.
 No backtics and markdown."""
     response = gemini_model.generate_content(extract_prompt)
     text = response.text.strip()
-    result_json = extract_json(text)
-    result_json["Source URLs used for enrichment"] = url if url else ""
-    return result_json
+    print(f"Raw Gemini response:\n{text}")
+    result = extract_json(text)
+    return result
 
 def enrich_all(df):
     df = clean_dataframe(df)
+    print("\n\nCleaned DF:", df.head(5))
     names = df['Franchisee'].tolist()
-    import pandas as pd
     classifications_df = classify_franchisees(names)
     enriched_rows = []
     for _, row in df.iterrows():
@@ -147,4 +133,4 @@ def enrich_all(df):
 
         enriched_rows.append({**row.to_dict(), "Type": entity_type, **enriched})
 
-    return pd.DataFrame(enriched_rows) 
+    return pd.DataFrame(enriched_rows)
